@@ -1,8 +1,19 @@
-# Use the base image
-FROM modenaf360/gotty:latest
+# Use the latest Ubuntu image
+FROM ubuntu:latest
 
-# Expose the desired port
+# Update and install required packages
+RUN apt-get update && apt-get install -y \
+    python3 \
+    python3-pip
+
+# Set the working directory
+WORKDIR /app
+
+# Install JupyterLab
+RUN pip3 install jupyterlab
+
+# Expose port 8080
 EXPOSE 8080
 
-# Start Gotty with the specified command
-CMD ["gotty", "-r", "-w", "--port", "8080", "/bin/bash"]
+# Start JupyterLab on port 8080 without authentication
+CMD ["jupyter", "lab", "--ip=0.0.0.0", "--port=8080", "--no-browser", "--allow-root", "--NotebookApp.token=''"]
