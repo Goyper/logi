@@ -14,12 +14,12 @@ RUN pip install --no-cache-dir jupyterlab
 
 # Configura JupyterLab para que no requiera contraseña
 RUN mkdir -p /app/.jupyter && \
-    echo "c.NotebookApp.token = ''" > /app/.jupyter/jupyter_notebook_config.py && \
-    echo "c.NotebookApp.password = ''" >> /app/.jupyter/jupyter_notebook_config.py && \
-    echo "c.NotebookApp.open_browser = False" >> /app/.jupyter/jupyter_notebook_config.py
+    echo "c.ServerApp.token = ''" > /app/.jupyter/jupyter_server_config.py && \
+    echo "c.ServerApp.password = ''" >> /app/.jupyter/jupyter_server_config.py && \
+    echo "c.ServerApp.open_browser = False" >> /app/.jupyter/jupyter_server_config.py
 
 # Expone el puerto que usará JupyterLab
 EXPOSE 8888
 
-# Define el comando de inicio
-CMD ["jupyter", "lab", "--ip=0.0.0.0", "--port=$PORT", "--no-browser", "--config=/app/.jupyter/jupyter_notebook_config.py"]
+# Define el comando de inicio, convirtiendo $PORT a entero
+CMD ["sh", "-c", "jupyter lab --ip=0.0.0.0 --port=${PORT:-8888} --no-browser --config=/app/.jupyter/jupyter_server_config.py"]
