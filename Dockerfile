@@ -1,19 +1,24 @@
-# Use the latest Ubuntu image
-FROM ubuntu:latest
+# Usa una imagen base oficial de Python
+FROM python:3.9-slim
 
-# Update and install required packages
-RUN apt-get update && apt-get install -y \
-    python \
-    python-pip
-
-# Set the working directory
+# Establece el directorio de trabajo
 WORKDIR /app
 
-# Install JupyterLab
-RUN pip install jupyterlab
+# Instala las dependencias del sistema necesarias
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential && \
+    rm -rf /var/lib/apt/lists/*
 
-# Expose port 8080
-EXPOSE 8080
+# Instala JupyterLab
+RUN pip install --no-cache-dir jupyterlab
 
-# Start JupyterLab on port 8080 without authentication
-CMD ["jupyter", "lab", "--ip=0.0.0.0", "--port=8080", "--no-browser", "--allow-root", "--NotebookApp.token=''"]
+# Configura Jupyter con una contraseña por defecto (puedes cambiarlo)
+RUN mkdir -p /root/.jupyter && \
+    echo "c.NotebookApp.password = '$(python3 -c \"from notebook.auth import passwd; print(passwd('tu_contraseña_aquí'))\")'" \
+    > /root/.jupyter/jupyter_notebook_config.py
+
+# Exponemos el puerto que usará JupyterLab
+EXPOSE 8888
+
+# Define el comando de inicio
+CMD ["jupyter", "lab", "--ip=0.0.0.0", "--port=$PORT", "--no-browser", "--allow-root"]
