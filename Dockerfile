@@ -4,20 +4,22 @@ FROM python:3.9-slim
 # Establece el directorio de trabajo
 WORKDIR /app
 
-# Instala las dependencias del sistema necesarias
+# Instala las dependencias necesarias del sistema
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential && \
     rm -rf /var/lib/apt/lists/*
 
-# Instala JupyterLab
+# Instala JupyterLab y sus dependencias
 RUN pip install --no-cache-dir jupyterlab
 
-# Configura Jupyter con una contraseña por defecto (puedes cambiarlo)
+# Genera un archivo de configuración de Jupyter con una contraseña segura
 RUN mkdir -p /root/.jupyter && \
-    echo "c.NotebookApp.password = '$(python3 -c \"from notebook.auth import passwd; print(passwd('tu_contraseña_aquí'))\")'" \
-    > /root/.jupyter/jupyter_notebook_config.py
+    python3 -c "from notebook.auth import passwd; \
+    password = passwd('tu_contraseña_aquí'); \
+    with open('/root/.jupyter/jupyter_notebook_config.py', 'w') as f: \
+        f.write(f'c.NotebookApp.password = \"{password}\"\n')"
 
-# Exponemos el puerto que usará JupyterLab
+# Expone el puerto que usará JupyterLab
 EXPOSE 8888
 
 # Define el comando de inicio
