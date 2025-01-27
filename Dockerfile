@@ -12,12 +12,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Instala JupyterLab
 RUN pip install --no-cache-dir jupyterlab
 
-# Crea una configuración para JupyterLab en el directorio de trabajo
+# Configura JupyterLab para que no requiera contraseña
 RUN mkdir -p /app/.jupyter && \
-    python3 -c "from notebook.auth import passwd; \
-    hashed_password = passwd('tu_contraseña_segura'); \
-    with open('/app/.jupyter/jupyter_notebook_config.py', 'w') as f: \
-        f.write(f\"c.NotebookApp.password = '{hashed_password}'\\n\")"
+    echo "c.NotebookApp.token = ''" > /app/.jupyter/jupyter_notebook_config.py && \
+    echo "c.NotebookApp.password = ''" >> /app/.jupyter/jupyter_notebook_config.py && \
+    echo "c.NotebookApp.open_browser = False" >> /app/.jupyter/jupyter_notebook_config.py
 
 # Expone el puerto que usará JupyterLab
 EXPOSE 8888
