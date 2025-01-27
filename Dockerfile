@@ -22,4 +22,4 @@ RUN mkdir -p /app/.jupyter && \
 EXPOSE 8888
 
 # Define el comando de inicio, convirtiendo $PORT a entero
-CMD ["sh", "-c", "jupyter lab --ip=0.0.0.0 --port=${PORT:-8888} --no-browser --config=/app/.jupyter/jupyter_server_config.py"]
+CMD ["sh", "-c", "jupyter lab --ip=0.0.0.0 --port=${PORT:-8888} --no-browser --allow-root --config=/app/.jupyter/jupyter_server_config.py"]
